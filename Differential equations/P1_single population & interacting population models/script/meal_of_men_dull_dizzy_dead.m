@@ -1,0 +1,32 @@
+
+%Drink on an emty stomach for men
+function dull_dizzy_dead
+global k1 k2 k3 ;
+k1=6; k2=3; k3=0.016; 
+
+tend= 6; %end time in hours
+
+%5 drinks C10=0.140 4 drinks=0.112 3 drinks =0.085, 2 drinks C10=.056
+C10=0.085; C20=0; u0 = [C10; C20];  
+
+%ode solution
+[tsol, usol] = ode45(@rhs, [0, tend], u0);
+C1sol = usol(:,1);
+C2sol = usol(:,2);
+
+%made a plot
+plot(tsol, C1sol,'k'); hold on
+plot(tsol, C2sol,'r:'); hold off
+legend('GI-tract', 'BAL Bloodstream')
+xlabel('time in hours')
+ylabel('BAL in (g/100ml)')
+title(' Man drinking with subtancial meal')
+
+%create funtion
+function dcdt = rhs(t, u)
+global k1 k2 k3
+M=double(0.005);
+C1 = u(1); C2=u(2);
+C1dot =-k1*C1;  %I=(n/t)*cs
+C2dot = k2*C1 - (k3*C2/(C2+M));
+dcdt = [C1dot; C2dot];
